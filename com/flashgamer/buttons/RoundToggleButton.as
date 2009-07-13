@@ -56,8 +56,8 @@ package com.flashgamer.buttons
 			} else {
 				this.graphics.beginFill(iconColor);
 				var sW:Number = w/8;
-				this.graphics.drawRect(w/4+(sW*0.5),h/4,sW,h/2);
-				this.graphics.drawRect(w/4+(sW*2.5),h/4,w/8,h/2);
+				this.graphics.drawRect(w/4+(sW*0.5)+reduceBy,h/4+reduceBy,sW-(reduceBy*2),h/2-(reduceBy*2));
+				this.graphics.drawRect(w/4+(sW*2.5)+reduceBy,h/4+reduceBy,w/8-(reduceBy*2),h/2-(reduceBy*2));
 				this.graphics.endFill();
 			}
 			

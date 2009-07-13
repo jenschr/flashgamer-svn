@@ -56,7 +56,7 @@ package com.flashgamer
 			background = new Sprite();
 			foreground = new Sprite();
 			controls = new Sprite();
-			video = new VideoStream(width-(pad*2),height-(pad*2),"http://www.birdie1.no/video/Birdie1_v2.flv");
+			video = new VideoStream(width-(pad*2),height-(pad*2)-hControls,"http://www.birdie1.no/video/Birdie1_v2.flv");
 			video.x = pad;
 			video.y = pad;
 			video.addEventListener(VideoEvent.METADATA,setTotal);
