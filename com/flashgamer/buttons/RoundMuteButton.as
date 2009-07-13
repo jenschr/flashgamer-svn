@@ -4,11 +4,12 @@ package com.flashgamer.buttons
 	import flash.events.MouseEvent;
 	import flash.geom.Matrix;
 
-	public class RoundPlayButton extends BaseButton implements IButton
+	public class RoundMuteButton extends BaseButton implements IButton
 	{
 		private var w:Number;
 		private var h:Number;
-		public function RoundPlayButton(width:Number, height:Number)
+		private var isMuted:Boolean = false;
+		public function RoundMuteButton(width:Number, height:Number)
 		{
 			w = width;
 			h = height;
@@ -27,6 +28,11 @@ package com.flashgamer.buttons
 		public override function down(e:MouseEvent):void
 		{
 			draw(0x9e9e9e,0x646464,0xffffff,-0.5);
+			if(isMuted){
+				isMuted = false;
+			} else {
+				isMuted = true;
+			}
 		}
 		private function draw(backgroundColor:Number,hightlightColor:Number,iconColor:Number, reduceBy:Number = 0):void
 		{
@@ -37,11 +43,25 @@ package com.flashgamer.buttons
 			this.graphics.drawCircle(w/2,h/2,w/2);
 			this.graphics.endFill();
 			
-			this.graphics.moveTo(w/4*1.4+reduceBy,h/4+reduceBy);
+			// icon
 			this.graphics.beginFill(iconColor);
-			this.graphics.lineTo(w/4*3-reduceBy,h/2);
-			this.graphics.lineTo(w/4*1.4+reduceBy,h/4*3-reduceBy);
-			this.graphics.lineTo(w/4*1.4+reduceBy,h/4+reduceBy);
+			var u:Number = w/9;
+			var v:Number = w/8;
+			
+			this.graphics.moveTo(u*2,v*3);
+			this.graphics.lineTo(u*4,v*3);
+			this.graphics.lineTo(u*6,v*1);
+			this.graphics.lineTo(u*6,v*7);
+			this.graphics.lineTo(u*4,v*5);
+			this.graphics.lineTo(u*2,v*5);
+			this.graphics.lineTo(u*2,v*3);
+			
+			if(isMuted){
+				this.graphics.moveTo(u*2,v*2);
+				this.graphics.lineStyle(2,iconColor,1,true);
+				this.graphics.lineTo(u*7,v*6);
+			}
+			
 			this.graphics.endFill();
 		}
 	}

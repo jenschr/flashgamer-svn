@@ -4,11 +4,12 @@ package com.flashgamer.buttons
 	import flash.events.MouseEvent;
 	import flash.geom.Matrix;
 
-	public class RoundPlayButton extends BaseButton implements IButton
+	public class RoundToggleButton extends BaseButton implements IButton
 	{
 		private var w:Number;
 		private var h:Number;
-		public function RoundPlayButton(width:Number, height:Number)
+		private var isPlaying:Boolean = false;
+		public function RoundToggleButton(width:Number, height:Number)
 		{
 			w = width;
 			h = height;
@@ -27,6 +28,11 @@ package com.flashgamer.buttons
 		public override function down(e:MouseEvent):void
 		{
 			draw(0x9e9e9e,0x646464,0xffffff,-0.5);
+			if(isPlaying){
+				isPlaying = false;
+			} else {
+				isPlaying = true;
+			}
 		}
 		private function draw(backgroundColor:Number,hightlightColor:Number,iconColor:Number, reduceBy:Number = 0):void
 		{
@@ -37,11 +43,24 @@ package com.flashgamer.buttons
 			this.graphics.drawCircle(w/2,h/2,w/2);
 			this.graphics.endFill();
 			
-			this.graphics.moveTo(w/4*1.4+reduceBy,h/4+reduceBy);
+			// icon
 			this.graphics.beginFill(iconColor);
-			this.graphics.lineTo(w/4*3-reduceBy,h/2);
-			this.graphics.lineTo(w/4*1.4+reduceBy,h/4*3-reduceBy);
-			this.graphics.lineTo(w/4*1.4+reduceBy,h/4+reduceBy);
+			
+			if(!isPlaying){
+				this.graphics.moveTo(w/4*1.4+reduceBy,h/4+reduceBy);
+				this.graphics.beginFill(iconColor);
+				this.graphics.lineTo(w/4*3-reduceBy,h/2);
+				this.graphics.lineTo(w/4*1.4+reduceBy,h/4*3-reduceBy);
+				this.graphics.lineTo(w/4*1.4+reduceBy,h/4+reduceBy);
+				this.graphics.endFill();
+			} else {
+				this.graphics.beginFill(iconColor);
+				var sW:Number = w/8;
+				this.graphics.drawRect(w/4+(sW*0.5),h/4,sW,h/2);
+				this.graphics.drawRect(w/4+(sW*2.5),h/4,w/8,h/2);
+				this.graphics.endFill();
+			}
+			
 			this.graphics.endFill();
 		}
 	}

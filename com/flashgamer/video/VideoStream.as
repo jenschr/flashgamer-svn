@@ -22,6 +22,8 @@ package com.flashgamer.video
 		private var isStarted:Boolean = false;
 		private var oldVolume:Number = 1;
 		private var isEnded:Boolean = true;
+		private var w:Number;
+		private var h:Number;
 		
 		public var loop:Boolean = false;
 		public var duration:Number = 0;
@@ -33,8 +35,10 @@ package com.flashgamer.video
         */
         public var nc:NetConnection;
         
-		public function VideoStream(file:String)
+		public function VideoStream(width:Number, height:Number,file:String)
 		{
+			w = width;
+			h = height;
 			_file = file;
 			
 			// Use null connection for progressive files
@@ -45,6 +49,63 @@ package com.flashgamer.video
         	
         	this.addEventListener(Event.ENTER_FRAME,progressHandler,false,0,true);
 		}
+		
+		/**
+        * Toggles playback
+        */
+		public function playPause(e:* = null):void
+		{
+//			trace("playPause "+isPlaying);
+			if(isPlaying){
+				pause();
+			} else {
+				play();
+			}
+		}
+		/**
+        * Plays the NetStream object. The material plays the NetStream object by default at init. Use this handler only if you pause the NetStream object;
+        */
+		public function play(e:*= null):void
+		{
+//			trace("play isStarted "+isStarted);
+			if(_netStream.time != 0 && !isEnded){
+				_netStream.resume();
+				isPlaying = true;
+			} else {
+				_netStream.play(_file);
+				isEnded = false;
+			}
+		}
+		
+		/**
+        * Pauses the NetStream object
+        */
+		public function pause(e:*= null):void
+		{
+			_netStream.pause();
+			isPlaying = false;
+		}
+		
+		/**
+        * Pauses the NetStream object nd sets position to 0
+        */
+		public function stop(e:*= null):void
+		{
+			pause();
+			_netStream.seek(0);
+		}
+		
+		/**
+        * Seeks to a given time in the file, specified in seconds, with a precision of three decimal places (milliseconds).
+		* For a progressive download, you can seek only to a keyframe, so a seek takes you to the time of the first keyframe after the specified time. (When streaming, a seek always goes to the precise specified time even if the source FLV file doesn't have a keyframe there.) 
+		* @param	val		Number: the playheadtime
+        */
+		public function seek(val:Number):void
+		{ 
+			pause();
+			_netStream.seek(val);
+		}
+		
 		private function whenAdded(e:Event):void
 		{
 			trace("whenAdded "+e);
@@ -56,7 +117,7 @@ package com.flashgamer.video
 		}
         private function playStream():void
         {
-        	video = new Video();
+        	video = new Video(w,h);
         	video.smoothing = true;
         	this.addChild( video );
         	this.mouseEnabled = false;
@@ -107,51 +168,7 @@ package com.flashgamer.video
 					break;
             }
         }
-		/**
-        * Toggles playback
-        */
-		public function playPause(e:* = null):void
-		{
-//			trace("playPause "+isPlaying);
-			if(isPlaying){
-				pause();
-			} else {
-				play();
-			}
-		}
-		/**
-        * Plays the NetStream object. The material plays the NetStream object by default at init. Use this handler only if you pause the NetStream object;
-        */
-		public function play(e:*= null):void
-		{
-//			trace("play isStarted "+isStarted);
-			if(_netStream.time != 0 && !isEnded){
-				_netStream.resume();
-				isPlaying = true;
-			} else {
-				_netStream.play(_file);
-				isEnded = false;
-			}
-		}
 		
-		/**
-        * Pauses the NetStream object
-        */
-		public function pause(e:*= null):void
-		{
-			_netStream.pause();
-			isPlaying = false;
-		}
-		/**
-        * Seeks to a given time in the file, specified in seconds, with a precision of three decimal places (milliseconds).
-		* For a progressive download, you can seek only to a keyframe, so a seek takes you to the time of the first keyframe after the specified time. (When streaming, a seek always goes to the precise specified time even if the source FLV file doesn't have a keyframe there.) 
-		* @param	val		Number: the playheadtime
-        */
-		public function seek(val:Number):void
-		{ 
-			pause();
-			_netStream.seek(val);
-		}
 		
 		/**
         * Returns the actual time of the netStream

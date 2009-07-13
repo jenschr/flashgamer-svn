@@ -15,16 +15,18 @@ package com.flashgamer
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
 	import com.flashgamer.buttons.RoundMuteButton;
+	import com.flashgamer.buttons.RoundToggleButton;
+	import com.flashgamer.buttons.RoundStopButton;
 	
 	public class VideoPlayer extends Sprite
 	{
 		public var w:Number = 320;
-		public var h:Number = 290;
+		public var h:Number = 300;
 		public var hControls:Number = 70;
-		public var pad:Number = 4;
-		public var rad:Number = 6;
+		public var pad:Number = 5;
+		public var rad:Number = 8;
 		public var grad1:Number = 0xffffff;
-		public var grad2:Number = 0xe3e3e3; // 0xe3e3e3 0x990000
+		public var grad2:Number = 0xe7e7e7; // 0xe3e3e3 0x990000
 		
 		private var background:Sprite;
 		private var video:VideoStream;
@@ -54,7 +56,9 @@ package com.flashgamer
 			background = new Sprite();
 			foreground = new Sprite();
 			controls = new Sprite();
-			video = new VideoStream("http://www.flashgamer.com/a/video/merry_melodies.flv");
+			video = new VideoStream(width-(pad*2),height-(pad*2),"http://www.birdie1.no/video/Birdie1_v2.flv");
+			video.x = pad;
+			video.y = pad;
 			video.addEventListener(VideoEvent.METADATA,setTotal);
 			video.addEventListener(VideoEvent.PROGRESS,setCurrentTime);
 			background.addEventListener(MouseEvent.MOUSE_UP,video.playPause);
@@ -82,11 +86,9 @@ package com.flashgamer
 			
 			foreground.graphics.clear();
 			//foreground.graphics.beginFill(0xffffff);
-			var startPoint:Number = 255*((h-hControls)/h);
-			trace("test: "+startPoint);
+			var startPoint:Number = 255*((h-hControls+(pad*2))/h);
 			var matrix:Matrix = new Matrix(1,0,0,1,-100,0);
-			matrix.scale(0.65,1);
-			matrix.rotate( 90*VideoPlayer.DEGTORAD );
+			matrix.createGradientBox(w,h,90*VideoPlayer.DEGTORAD)
 			foreground.graphics.beginGradientFill(GradientType.LINEAR,[grad1,grad2],[1,1],[startPoint,255],matrix);
 			foreground.graphics.lineStyle(0,0xdde0dc);
 			foreground.graphics.moveTo(0,rad);
@@ -187,15 +189,15 @@ package com.flashgamer
 			controls.filters = [new GlowFilter(0,0.1,8,8,3)];
 			var startX:Number = 95;
 			 
-			var play:RoundPlayButton = new RoundPlayButton(17,17);
+			var play:RoundToggleButton = new RoundToggleButton(17,17);
 			controls.addChild( play );
-			play.addEventListener(MouseEvent.CLICK,video.play);
+			play.addEventListener(MouseEvent.CLICK,video.playPause);
 			play.x = startX;
 			
-			var pause:RoundPauseButton = new RoundPauseButton(17,17);
-			controls.addChild( pause );
-			pause.addEventListener(MouseEvent.CLICK,video.pause);
-			pause.x = startX+45;
+			var stopp:RoundStopButton = new RoundStopButton(17,17);
+			controls.addChild( stopp );
+			stopp.addEventListener(MouseEvent.CLICK,video.stop);
+			stopp.x = startX+45;
 			
 			var mute:RoundMuteButton = new RoundMuteButton(17,17);
 			controls.addChild( mute );
