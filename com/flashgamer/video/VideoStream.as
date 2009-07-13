@@ -20,6 +20,7 @@ package com.flashgamer.video
 		private var _file:String;
 		private var isPlaying:Boolean = false;
 		private var isStarted:Boolean = false;
+		private var oldVolume:Number = 1;
 		private var isEnded:Boolean = true;
 		
 		public var loop:Boolean = false;
@@ -121,7 +122,7 @@ package com.flashgamer.video
 		/**
         * Plays the NetStream object. The material plays the NetStream object by default at init. Use this handler only if you pause the NetStream object;
         */
-		public function play():void
+		public function play(e:*= null):void
 		{
 //			trace("play isStarted "+isStarted);
 			if(_netStream.time != 0 && !isEnded){
@@ -136,7 +137,7 @@ package com.flashgamer.video
 		/**
         * Pauses the NetStream object
         */
-		public function pause():void
+		public function pause(e:*= null):void
 		{
 			_netStream.pause();
 			isPlaying = false;
@@ -185,6 +186,27 @@ package com.flashgamer.video
             var transform:SoundTransform = _netStream.soundTransform;
             transform.volume = val;
             _netStream.soundTransform = transform;
+            if(val != 0){
+            	oldVolume = val;
+            }
+        }
+        public function get volume():Number
+		{
+            var transform:SoundTransform = _netStream.soundTransform;
+            return transform.volume;
+        }
+        
+		/**
+        * The sound volume
+		* @param	val		Number: the sound volume, a value from 0 to 1. Default is 0;
+        */
+        public function mute(e:*=null):void
+		{
+            if(volume == 0){
+            	volume = oldVolume;
+            } else {
+            	volume = 0;
+            }
         }
         
         // Event handling

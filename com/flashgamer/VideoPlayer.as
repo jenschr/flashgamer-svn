@@ -14,6 +14,7 @@ package com.flashgamer
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
+	import com.flashgamer.buttons.RoundMuteButton;
 	
 	public class VideoPlayer extends Sprite
 	{
@@ -184,12 +185,30 @@ package com.flashgamer
 			controls.x = pad+rad;
 			controls.y = h-pad-hControls+38;
 			controls.filters = [new GlowFilter(0,0.1,8,8,3)];
-			
+			var startX:Number = 95;
+			 
 			var play:RoundPlayButton = new RoundPlayButton(17,17);
 			controls.addChild( play );
+			play.addEventListener(MouseEvent.CLICK,video.play);
+			play.x = startX;
+			
 			var pause:RoundPauseButton = new RoundPauseButton(17,17);
 			controls.addChild( pause );
-			pause.x = 30;
+			pause.addEventListener(MouseEvent.CLICK,video.pause);
+			pause.x = startX+45;
+			
+			var mute:RoundMuteButton = new RoundMuteButton(17,17);
+			controls.addChild( mute );
+			mute.addEventListener(MouseEvent.CLICK,video.mute);
+			mute.x = startX+90;
+			
+			controls.graphics.clear();
+			controls.graphics.moveTo(startX+32,-2);
+			controls.graphics.lineStyle(1,0xbbbbbb,1,true);
+			controls.graphics.lineTo(startX+32,18);
+			controls.graphics.moveTo(startX+32+45,-2);
+			controls.graphics.lineStyle(1,0xbbbbbb,1,true);
+			controls.graphics.lineTo(startX+32+45,18);
 		}
 		
 		/**
