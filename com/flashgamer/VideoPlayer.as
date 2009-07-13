@@ -102,7 +102,8 @@ package com.flashgamer
 			foreground.graphics.lineTo(0,rad);
 			 
 			// inner window
-			foreground.graphics.lineStyle();
+			//foreground.graphics.lineStyle(); // No inner border
+			foreground.graphics.lineStyle(0,0xeff2ee); // weak inner boarder
 			foreground.graphics.moveTo(pad,pad+rad);
 			foreground.graphics.curveTo(pad,pad,pad+rad,pad);
 			foreground.graphics.lineTo(w-pad-rad,pad);

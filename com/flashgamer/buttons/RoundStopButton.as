@@ -39,6 +39,7 @@ package com.flashgamer.buttons
 			
 			this.graphics.beginFill(iconColor);
 			var sW:Number = w/8;
+			reduceBy += 0.5;
 			this.graphics.drawRect(sW*2+reduceBy,sW*2+reduceBy,sW*4-(reduceBy*2),sW*4-(reduceBy*2));
 			this.graphics.endFill();
 		}
