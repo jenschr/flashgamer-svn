@@ -62,5 +62,13 @@ package com.flashgamer.numbers
 		{
 			s.play(0);
 		}
+		private function extraZero(val:Number):String
+		{
+			var rez:String = val.toString();
+			if(rez.length == 1){
+				rez = "0"+rez;
+			}
+			return rez;
+		}
 	}
 }
