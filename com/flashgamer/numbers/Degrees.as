@@ -21,5 +21,12 @@ package com.flashgamer.numbers
 		{
 			return Math.sin( angle*DEGTORAD );
 		}
+		// returns answer as radians
+		public static function findAngle(point1:Point, point2:Point):Number
+		{
+			var dx:Number = point2.x - point1.x;
+			var dy:Number = point2.y - point1.y;
+			return -Math.atan2(dx,dy);
+		}
 	}
 }
