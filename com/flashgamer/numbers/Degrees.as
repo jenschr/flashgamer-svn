@@ -1,5 +1,7 @@
 package com.flashgamer.numbers
 {
+	import flash.geom.Point;
+
 	/**
 	 * @author jensa
 	 */
@@ -26,7 +28,7 @@ package com.flashgamer.numbers
 		{
 			var dx:Number = point2.x - point1.x;
 			var dy:Number = point2.y - point1.y;
-			return -Math.atan2(dx,dy);
+			return Math.atan2(dx,dy);
 		}
 	}
 }

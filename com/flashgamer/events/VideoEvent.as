@@ -12,6 +12,7 @@ package com.flashgamer.events
     	 * Dispatched when the video starts playing (NetStream.Play.Start)
     	 */
     	public static const PLAY:String = "onPlay";
+        public static const PLAY_START:String = "onPlayStart";
     	
     	/**
     	 * Dispatched when the video stops playing (NetStream.Play.Start)

@@ -20,8 +20,8 @@ package com.flashgamer
 	
 	public class VideoPlayer extends Sprite
 	{
-		public var w:Number = 320;
-		public var h:Number = 300;
+		public var w:Number;
+		public var h:Number;
 		public var hControls:Number = 70;
 		public var pad:Number = 5;
 		public var rad:Number = 8;
@@ -41,7 +41,7 @@ package com.flashgamer
 		private var isScrubbing:Boolean = false;
 		public static const DEGTORAD : Number = Math.PI/180;
 		
-		public function VideoPlayer(width:Number,height:Number,heightOfControls:Number)
+		public function VideoPlayer(file:String, width:Number = 0,height:Number = 0,heightOfControls:Number = 30)
 		{
 			// Save sizes
 			w = width;
@@ -56,7 +56,7 @@ package com.flashgamer
 			background = new Sprite();
 			foreground = new Sprite();
 			controls = new Sprite();
-			video = new VideoStream(width-(pad*2),height-(pad*2)-hControls,"http://www.birdie1.no/video/Birdie1_v2.flv");
+			video = new VideoStream(file, width, height );
 			video.x = pad;
 			video.y = pad;
 			video.addEventListener(VideoEvent.METADATA,setTotal);
@@ -71,13 +71,24 @@ package com.flashgamer
 			this.addChild( controls );
 			
 			// draw the visuals
-			drawPlayer();
+            redraw();
+		}
+
+        public function setSize(width:Number, height:Number):void
+        {
+            w = width;
+			h = height;
+            redraw();
+        }
+        private function redraw():void
+        {
+            drawPlayer();
 			drawTextFields();
 			drawScrubber();
 			drawProgressbar();
 			drawButtons();
-		}
-		public function drawPlayer():void
+        }
+		private function drawPlayer():void
 		{
 			background.graphics.clear();
 			background.graphics.beginFill(0xdde0dc);
@@ -117,7 +128,7 @@ package com.flashgamer
 		private function drawTextFields():void
 		{
 			// elapsed time textfield
-			elapsedTime = new TextField();
+			if(!elapsedTime){ elapsedTime = new TextField(); }
 			elapsedTime.autoSize = TextFieldAutoSize.NONE;
 			elapsedTime.width = 40;
 			elapsedTime.height = 15;
@@ -127,7 +138,7 @@ package com.flashgamer
 			this.addChild( elapsedTime );
 			setTime(elapsedTime,"00:00");
 			
-			totalTime = new TextField();
+			if(!totalTime){ totalTime = new TextField(); }
 			totalTime.autoSize = TextFieldAutoSize.NONE;
 			totalTime.width = 40;
 			totalTime.height = 15;
@@ -145,9 +156,10 @@ package com.flashgamer
 			var matrix:Matrix = new Matrix();
 			matrix.createGradientBox(sWidth,sHeight,90*VideoPlayer.DEGTORAD);
 			
-			scrubber = new Sprite();
-			scrubber.x = pad+rad+40;
+			if(!scrubber){ scrubber = new Sprite(); }
+            scrubber.x = pad+rad+40;
 			scrubber.y = h-hControls+10+6;
+			scrubber.graphics.clear();
 			scrubber.graphics.beginGradientFill(GradientType.LINEAR,[0xa4a4a4,0xd8d8d8],[1,1],[0,255],matrix);
 			scrubber.graphics.drawRoundRect(0,0,sWidth,sHeight,sHeight,sHeight);
 			this.addChild( scrubber );
@@ -163,7 +175,7 @@ package com.flashgamer
 			var matrix:Matrix = new Matrix();
 			matrix.createGradientBox(sWidth,sHeight,90*VideoPlayer.DEGTORAD);
 			
-			progressbar = new Sprite();
+			if(!progressbar){ progressbar = new Sprite();}
 			progressbar.x = pad+rad+40;
 			progressbar.y = h-hControls+10+6;
 			progressbar.graphics.beginGradientFill(GradientType.LINEAR,[0x1ea1ff,0x52d7ff],[1,1],[0,255],matrix);

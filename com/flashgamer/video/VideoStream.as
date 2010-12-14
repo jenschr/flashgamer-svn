@@ -18,13 +18,15 @@ package com.flashgamer.video
 		private var _netStream:NetStream;
 		private var video:Video;
 		private var _file:String;
-		private var isPlaying:Boolean = false;
-		private var isStarted:Boolean = false;
+		private var _isPlaying:Boolean = false;
+		private var isBuffered:Boolean = false;
 		private var oldVolume:Number = 1;
 		private var isEnded:Boolean = true;
-		private var w:Number;
-		private var h:Number;
+		private var _w:Number;
+		private var _h:Number;
 		
+		private var _autoSize:Boolean = true;
+		private var _autoPlay:Boolean = true;
 		public var loop:Boolean = false;
 		public var duration:Number = 0;
 		public var time:Number = 0;
@@ -35,11 +37,11 @@ package com.flashgamer.video
         */
         public var nc:NetConnection;
         
-		public function VideoStream(width:Number, height:Number,file:String)
+		public function VideoStream(file:String = null, width:Number = 0, height:Number = 0)
 		{
-			w = width;
-			h = height;
-			_file = file;
+			_w = width;
+			_h = height;
+			this.file = file;
 			
 			// Use null connection for progressive files
 			nc = new NetConnection();
@@ -49,7 +51,20 @@ package com.flashgamer.video
         	
         	this.addEventListener(Event.ENTER_FRAME,progressHandler,false,0,true);
 		}
-		
+
+		/**
+        * Forces a certain size
+        */
+		public function setSize(width:Number, height:Number):void
+		{
+			trace("**** setSize "+width+":"+height);
+			_w = width;
+			_h = height;
+            video.width = _w;
+            video.height = _h;
+            autoSize = false;
+		}
+
 		/**
         * Toggles playback
         */
@@ -72,7 +87,7 @@ package com.flashgamer.video
 				_netStream.resume();
 				isPlaying = true;
 			} else {
-				_netStream.play(_file);
+				_netStream.play(file);
 				isEnded = false;
 			}
 		}
@@ -117,7 +132,7 @@ package com.flashgamer.video
 		}
         private function playStream():void
         {
-        	video = new Video(w,h);
+        	video = new Video(_w,_h);
         	video.smoothing = true;
         	this.addChild( video );
         	this.mouseEnabled = false;
@@ -140,32 +155,50 @@ package com.flashgamer.video
         }
 		private function netStatusHandler(e:NetStatusEvent):void
 		{
-//			trace("netStatusHandler "+e.info["code"])
+			//trace("netStatusHandler "+e.info["code"])
             switch (e.info["code"]) {
                 case "NetStream.Play.Stop": 
-					dispatchEvent( new VideoEvent(VideoEvent.STOP,_netStream, _file) );
+					dispatchEvent( new VideoEvent(VideoEvent.STOP,_netStream, file) );
 					isPlaying = false;
-					if(loop){ _netStream.play(_file); }	
+					if(loop){ _netStream.play(file); }
 					break;
                 case "NetStream.Play.Start":
+                    dispatchEvent( new VideoEvent(VideoEvent.PLAY_START,_netStream, file) );
 					isPlaying = true;
 					break;
                 case "NetStream.Buffer.Empty":
 					isEnded = true; // When the video ends, it'll dispatch this event - thus we should no longer resume, but rather play()
 					break;
                 case "NetStream.Play.Play":
-					dispatchEvent( new VideoEvent(VideoEvent.PLAY,_netStream, _file) );
+					dispatchEvent( new VideoEvent(VideoEvent.PLAY,_netStream, file) );
 					isPlaying = true;
 					break;
                 case "NetStream.Play.StreamNotFound":
-					showError("The file "+_file+"was not found", e);
+					showError("The file "+file+"was not found", e);
 					break;
                 case "NetConnection.Connect.Success":
 					playStream(); // Always start playing upon connect
 					break;
                 case "NetStream.Buffer.Full":
-					if(!isStarted){ isStarted = true; pause(); } // upon load, we want the movie to start loading, but only display frame 1 (no autostart)
+					if(!isBuffered){
+                        isBuffered = true;
+                        if(autoPlay){
+                            play();
+                        } else {
+                            pause();
+                        }
+                    } // upon load, we want the movie to start loading, but only display frame 1 (no autostart)
 					break;
+            }
+        }
+
+        private function adjustSize(w:Number,  h:Number):void
+        {
+            if(autoSize){
+                _w = w;
+                _h = h;
+                video.width = _w;
+                video.height = _h;
             }
         }
 		
@@ -231,7 +264,7 @@ package com.flashgamer.video
 		{
 			if(isPlaying && lastVideoPosition != currentTime){
 				lastVideoPosition = currentTime;
-				dispatchEvent( new VideoEvent(VideoEvent.PROGRESS,_netStream, _file,lastVideoPosition) );
+				dispatchEvent( new VideoEvent(VideoEvent.PROGRESS,_netStream, file,lastVideoPosition) );
 				time = _netStream.time;
 			}
 		}
@@ -245,7 +278,10 @@ package com.flashgamer.video
 			// Offers info such as oData.duration, oData.width, oData.height, oData.framerate and more (if encoded into the FLV)
 			if(oData.duration){
 				duration = oData.duration;
-				dispatchEvent( new VideoEvent(VideoEvent.METADATA,_netStream, _file,duration) );
+				dispatchEvent( new VideoEvent(VideoEvent.METADATA,_netStream, file,duration) );
+			}
+            if(oData.width && oData.height){
+                adjustSize(oData.width, oData.height);
 			}
 		}
 		
@@ -263,5 +299,49 @@ package com.flashgamer.video
 		{
 			trace(txt+":"+e);
 		}
-	}
+
+        public function get file():String
+        {
+            return _file;
+        }
+
+        public function set file(value:String):void
+        {
+            _file = value;
+            if(_file && _file.length > 4){
+                isBuffered = true;
+                _netStream.play(_file);
+            }
+        }
+
+        public function get autoPlay():Boolean
+        {
+            return _autoPlay;
+        }
+
+        public function set autoPlay(value:Boolean):void
+        {
+            _autoPlay = value;
+        }
+
+        public function get autoSize():Boolean
+        {
+            return _autoSize;
+        }
+
+        public function set autoSize(value:Boolean):void
+        {
+            _autoSize = value;
+        }
+
+        public function get isPlaying():Boolean
+        {
+            return _isPlaying;
+        }
+
+        public function set isPlaying(value:Boolean):void
+        {
+            _isPlaying = value;
+        }
+    }
 }
